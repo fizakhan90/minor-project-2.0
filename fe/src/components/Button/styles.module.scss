@@ -1,0 +1,25 @@
+.Button {
+  height: 45px;
+  padding: 8px 12px 8px 8px;
+  background-color: #d7d9da;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #051860;
+  font-family: monospace;
+
+  box-shadow: 3px 3px 1px 0px black;
+  & svg,
+  & path {
+    fill: var(--white);
+    height: 100%;
+  }
+  & span {
+    padding-left: 5px;
+  }
+  &:hover {
+    background-color: #8d8d8d;
+    color: #fff710;
+  }
+}

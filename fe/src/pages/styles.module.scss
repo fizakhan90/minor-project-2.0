@@ -1,0 +1,69 @@
+.Container {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ControlContainer {
+  position: relative;
+  width: 100%;
+  height: 50%;
+
+  max-width: 300px;
+  max-height: 300px;
+
+  background-color: #6d757c3b;
+  border-radius: 5px;
+
+  text-transform: uppercase;
+}
+
+.ButtonForward {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ButtonBackward {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ButtonLeft {
+  position: absolute;
+  top: 35%;
+  left: 10%;
+}
+
+.ButtonRight {
+  position: absolute;
+  top: 35%;
+  right: 10%;
+}
+
+.ButtonDown {
+  position: absolute;
+  top: 40%;
+  left: 10%;
+}
+
+.ButtonUp {
+  position: absolute;
+  top: 5%;
+  left: 10%;
+}
+
+.ButtonStop {
+  position: absolute;
+  color: rgb(115, 22, 22);
+  bottom: 5%;
+  right: 5%;
+}
