@@ -46,9 +46,9 @@ export const ControlPage = () => {
                 <Button Icon={TurnRightIcon} onClick={sendTurnRightCommand} className={styles.ButtonRight} text="Right" />
             </div>
             <div className={styles.ControlContainer}>
-                <Button Icon={DownIcon} onClick={sendStopCommand} className={styles.ButtonDown} text="Start Position" />
+                <Button Icon={DownIcon} onClick={sendUpCommand} className={styles.ButtonDown} text="Start Position" />
                 <Button Icon={UpIcon} onClick={sendDownCommand} className={styles.ButtonUp} text="Down" />
-                <Button Icon={StopIcon} onClick={sendUpCommand} className={styles.ButtonStop} text="Stop" />
+                <Button Icon={StopIcon} onClick={sendStopCommand} className={styles.ButtonStop} text="Stop" />
             </div>
         </div>
     );
