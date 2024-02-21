@@ -19,10 +19,10 @@ const io = new Server(server, {
 
 const port = process.env.PORT || 3001;
 
-app.use('/static', express.static(path.join(__dirname, '../fe/build/static')))
+app.use('/static', express.static(path.join(__dirname, '../fe/dist/static')))
 
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, '../fe/build/index.html'));
+    res.sendFile(path.join(__dirname, '../fe/dist/index.html'));
 });
 
 server.listen(port);
