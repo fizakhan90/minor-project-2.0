@@ -5,6 +5,8 @@ const server = require('http').createServer(app);
 
 const { Server } = require('socket.io');
 
+const { controllerDeviceArm } = require('../../grobotics-device-pic/src/controllers/controller_arm');
+
 const io = new Server(server, {
     cors: {
         origin: true,
@@ -28,7 +30,8 @@ server.listen(port);
 io.on('connection', (socket) => {
     console.log('connect')
     socket.on('message_from_client', (message) => {
-        console.log('got message', message)
+        console.log('got message', message);
+        controllerDeviceArm.send(message);
     });
 });
 
