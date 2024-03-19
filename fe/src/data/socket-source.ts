@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 
-const SOCKET_URL = "http://192.168.1.13:3001";
+const SOCKET_URL = "http://localhost:3001";
 
 export const createSocket = (): Socket =>
   io(SOCKET_URL, {
@@ -9,6 +9,7 @@ export const createSocket = (): Socket =>
 
 export type SocketMessage = {
   readonly id: string;
+  readonly controllerId: string;
 };
 
 export const newSocketSource = () => {
