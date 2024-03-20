@@ -12,6 +12,9 @@ class Arm {
       A,
       B,
       C,
+      a,
+      b,
+      c,
       sendMessage,
     } = props;
     // pins on pca9685
@@ -26,6 +29,10 @@ class Arm {
     this.B = B;
     this.C = C;
     // For calibration
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    // for position state
     this.x = 0;
     this.y = 0;
     this.z = 0;
@@ -85,9 +92,9 @@ class Arm {
       : 180 - this.calcGamma(x, z);
     const _Betta = Betta + Delta;
 
-    checkAngle(Alpha) && this.setA(this.invertX ? Alpha : 180 - Alpha);
-    checkAngle(_Betta) && this.setB(this.invertX ? 180 - (90 + _Betta) : 90 + _Betta);
-    checkAngle(Gamma) && this.setC(Gamma);
+    checkAngle(Alpha) && this.setA(this.invertX ? Alpha+this.a : 180 - Alpha-this.a);
+    checkAngle(_Betta) && this.setB(this.invertX ? 180 - (90 + _Betta+this.b) : 90 + _Betta+this.b);
+    checkAngle(Gamma) && this.setC(Gamma+this.c);
   }
   /////
   setPosition({ x, y, z, count: t }) {

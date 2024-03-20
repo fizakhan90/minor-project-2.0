@@ -5,6 +5,7 @@ const ADDR = 0x40;
 
 const MIN = 102;
 const MAX = 491;
+const cb = () => {};
 
 const mapping = (angle, max = MAX, min = MIN) => {
   return Math.ceil(((max - min) * angle) / 180 + min);
@@ -47,7 +48,7 @@ const deviceArm = {
   },
   sendMessage(msg) {
     const { id, body } = msg;
-
+    //console.log(msg);
     switch (id) {
       case messagesIdsMap.sendMessage:
         const { channel, width: baseWidth } = body;

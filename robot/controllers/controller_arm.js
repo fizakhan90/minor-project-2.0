@@ -3,23 +3,24 @@ const { getForwardPointsSet } = require("../utils");
 const { deviceArm } = require("../devices/device_arm");
 
 // Dimensions
-const A = 94;
+const A = 90;
 const B = 53;
 const C = 43;
 
-const sendMessage = deviceArm.sendMessage;
+const sendMessage = ({ id, width }) => deviceArm.sendMessage({ id: 'sendMessage', body: { channel: id, width }});
 
 // Settings
 let step = 1; //1 mm per time
-let speed = 30;
-let S = 120; //mm
+let speed = 20;
+let S = 100; //mm
 let y0 = -90; //mm
-let z0 = 50; //mm
+let z0 = 70; //mm
 let kY = 30; //mm
-
+let count = 50;
+let countUp = 20;
 let interval = null;
 
-const oneStep = (2 * S) / 3;
+const oneStep = S / 3;
 const xInit = 5;
 
 const controllerArm = {
@@ -121,13 +122,14 @@ const controllerArm = {
 
   send(msg) {
     const { id } = msg;
+    console.log(msg);
     switch (id) {
       case "position_stop":
         interval && clearInterval(interval);
         return;
       case "go_step_up":
         interval && clearInterval(interval);
-        const points = getForwardPointsSet({ oneStep, y0, z0, S, xInit, kY });
+        const points = getForwardPointsSet({ count, countUp, oneStep, y0, z0, S, xInit, kY });
         const func = this.setPositionsForLeg(points);
 
         interval = setInterval(func, speed);
