@@ -86,8 +86,8 @@ class Arm {
     const _Betta = Betta + Delta;
 
     checkAngle(Alpha) && this.setA(this.invertX ? Alpha : 180 - Alpha);
-    checkAngle(_Betta) && this.setB(180 - _Betta);
-    checkAngle(Gamma) && this.setC(this.invertX ? Gamma - 180 : Gamma);
+    checkAngle(_Betta) && this.setB(this.invertX ? 180 - (90 + _Betta) : 90 + _Betta);
+    checkAngle(Gamma) && this.setC(Gamma);
   }
   /////
   setPosition({ x, y, z, count: t }) {
