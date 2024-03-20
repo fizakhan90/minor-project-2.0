@@ -1,12 +1,13 @@
 const { Arm } = require("../models/arm");
 const { getForwardPointsSet } = require("../utils");
+const { deviceArm } = require("../devices/device_arm");
 
 // Dimensions
 const A = 94;
 const B = 53;
 const C = 43;
 
-const sendMessage = (m) => {};
+const sendMessage = deviceArm.sendMessage;
 
 // Settings
 let step = 1; //1 mm per time
@@ -23,7 +24,8 @@ const xInit = 5;
 
 const controllerArm = {
   // Create instances of legs(arms)
-  init() {
+  async init() {
+    await deviceArm.initDevice();
     this.leftArm = new Arm({
       chA: 0,
       chB: 1,
@@ -88,10 +90,6 @@ const controllerArm = {
       pointSet[2].length,
       pointSet[3].length,
     ];
-    // this.leftArm.setPosition(pointSet[0][currentPointsNumber[0]]);
-    // this.rightArm.setPosition(pointSet[1][currentPointsNumber[1]]);
-    // this.leftArmBack.setPosition(pointSet[2][currentPointsNumber[2]]);
-    // this.rightArmBack.setPosition(pointSet[3][currentPointsNumber[3]]);
 
     return () => {
       const statuses = [
