@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:3001";
+const SOCKET_URL = ":3001";
 
 export const createSocket = (): Socket =>
   io(SOCKET_URL, {
