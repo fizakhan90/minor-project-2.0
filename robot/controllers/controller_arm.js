@@ -120,10 +120,14 @@ const controllerArm = {
         }
         if (currentPointsNumber[i] === maxPositionsNumber[i]) {
           currentPointsNumber[i] = 0;
-          if (once) {
-            interval && clearInterval(interval);
-          }
         }
+      }
+
+      if (
+        statuses.every((s) => s) &&
+        currentPointsNumber.every((s) => s === 0)
+      ) {
+        interval && clearInterval(interval);
       }
     };
   },
@@ -173,7 +177,7 @@ const controllerArm = {
           const points = getToDownPointsSet({
             count,
             oneStep,
-            y0: 50,
+            y0: 80,
             z0,
           });
           const funcDown = this.setPositionsForLeg(points, true);
