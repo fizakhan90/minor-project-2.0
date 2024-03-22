@@ -1,4 +1,13 @@
-const getForwardPointsSet = ({ count, countUp, oneStep, y0, z0, S, xInit, kY}) => [
+const getForwardPointsSet = ({
+  count,
+  countUp,
+  oneStep,
+  y0,
+  z0,
+  S,
+  xInit,
+  kY,
+}) => [
   [
     //left
     //{ x: 2 * oneStep, y: y0, z: z0, count: 30 },
@@ -41,20 +50,24 @@ const getStandUpPointsSet = ({ oneStep, y0, z0, count }) => [
   [
     //left
     { x: oneStep, y: 0, z: z0, count },
+    { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: y0, z: z0, count },
   ],
   [
     //right
+    { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: y0, z: z0, count },
   ],
   [
     //left back
     { x: oneStep, y: 0, z: z0, count },
+    { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: y0, z: z0, count },
   ],
   [
     //right back
+    { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: y0, z: z0, count },
   ],
@@ -64,11 +77,13 @@ const getToDownPointsSet = ({ oneStep, y0, z0, count }) => [
   [
     //left
     { x: oneStep, y: 0, z: z0, count },
+    { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: y0, z: z0, count }, //y0=20
     { x: oneStep, y: y0, z: 0, count },
   ],
   [
     //right
+    { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: y0, z: z0, count },
     { x: oneStep, y: y0, z: 0, count },
@@ -76,11 +91,13 @@ const getToDownPointsSet = ({ oneStep, y0, z0, count }) => [
   [
     //left back
     { x: oneStep, y: 0, z: z0, count },
+    { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: y0, z: z0, count },
     { x: oneStep, y: y0, z: 0, count },
   ],
   [
     //right back
+    { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: 0, z: z0, count },
     { x: oneStep, y: y0, z: z0, count },
     { x: oneStep, y: y0, z: 0, count },
