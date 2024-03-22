@@ -88,7 +88,7 @@ const controllerArm = {
       c: 0,
     });
   },
-  setPositionsForLeg(pointSet) {
+  setPositionsForLeg(pointSet, once) {
     const currentPointsNumber = [0, 0, 0, 0];
     const maxPositionsNumber = [
       pointSet[0].length,
@@ -120,6 +120,9 @@ const controllerArm = {
         }
         if (currentPointsNumber[i] === maxPositionsNumber[i]) {
           currentPointsNumber[i] = 0;
+          if (once) {
+            interval && clearInterval(interval);
+          }
         }
       }
     };
@@ -155,15 +158,11 @@ const controllerArm = {
           interval && clearInterval(interval);
           const points = getStandUpPointsSet({
             count,
-            countUp,
             oneStep,
             y0,
             z0,
-            S,
-            xInit,
-            kY,
           });
-          const funcUp = this.setPositionsForLeg(points);
+          const funcUp = this.setPositionsForLeg(points, true);
 
           interval = setInterval(funcUp, speed);
         }
@@ -173,15 +172,11 @@ const controllerArm = {
           interval && clearInterval(interval);
           const points = getToDownPointsSet({
             count,
-            countUp,
             oneStep,
-            y0,
+            y0: 50,
             z0,
-            S,
-            xInit,
-            kY,
           });
-          const funcDown = this.setPositionsForLeg(points);
+          const funcDown = this.setPositionsForLeg(points, true);
 
           interval = setInterval(funcDown, speed);
         }
