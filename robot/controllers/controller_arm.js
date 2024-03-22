@@ -1,5 +1,9 @@
 const { Arm } = require("../models/arm");
-const { getForwardPointsSet } = require("../utils");
+const {
+  getForwardPointsSet,
+  getStandUpPointsSet,
+  getToDownPointsSet,
+} = require("../utils");
 const { deviceArm } = require("../devices/device_arm");
 
 // Dimensions
@@ -7,7 +11,8 @@ const A = 90;
 const B = 53;
 const C = 43;
 
-const sendMessage = ({ id, width }) => deviceArm.sendMessage({ id: 'sendMessage', body: { channel: id, width }});
+const sendMessage = ({ id, width }) =>
+  deviceArm.sendMessage({ id: "sendMessage", body: { channel: id, width } });
 
 // Settings
 let step = 1; //1 mm per time
@@ -129,12 +134,57 @@ const controllerArm = {
         return;
       case "go_step_up":
         interval && clearInterval(interval);
-        const points = getForwardPointsSet({ count, countUp, oneStep, y0, z0, S, xInit, kY });
+        const points = getForwardPointsSet({
+          count,
+          countUp,
+          oneStep,
+          y0,
+          z0,
+          S,
+          xInit,
+          kY,
+        });
         const func = this.setPositionsForLeg(points);
 
         interval = setInterval(func, speed);
         return;
       case "go_step_down":
+        return;
+      case "position_up":
+        {
+          interval && clearInterval(interval);
+          const points = getStandUpPointsSet({
+            count,
+            countUp,
+            oneStep,
+            y0,
+            z0,
+            S,
+            xInit,
+            kY,
+          });
+          const funcUp = this.setPositionsForLeg(points);
+
+          interval = setInterval(funcUp, speed);
+        }
+        return;
+      case "position_down":
+        {
+          interval && clearInterval(interval);
+          const points = getToDownPointsSet({
+            count,
+            countUp,
+            oneStep,
+            y0,
+            z0,
+            S,
+            xInit,
+            kY,
+          });
+          const funcDown = this.setPositionsForLeg(points);
+
+          interval = setInterval(funcDown, speed);
+        }
         return;
     }
   },
