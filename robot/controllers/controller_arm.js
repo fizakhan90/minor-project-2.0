@@ -3,6 +3,7 @@ const {
   getForwardPointsSet,
   getStandUpPointsSet,
   getToDownPointsSet,
+  getTurnPointsSet,
 } = require("../utils");
 const { deviceArm } = require("../devices/device_arm");
 
@@ -88,7 +89,7 @@ const controllerArm = {
       c: 0,
     });
   },
-  setPositionsForLeg(pointSet, once, cb) {
+  setPositionsForLeg(pointSet) {
     const currentPointsNumber = [0, 0, 0, 0];
     const maxPositionsNumber = [
       pointSet[0].length,
@@ -119,13 +120,41 @@ const controllerArm = {
           currentPointsNumber[i] += 1;
         }
         if (currentPointsNumber[i] === maxPositionsNumber[i]) {
-          cb(true);
           currentPointsNumber[i] = 0;
         }
       }
     };
   },
-
+  setPositionsForLegSync(pointSet, readyCallback) {
+    let currentPointsNumber = 0;
+    const maxPositionsNumber = pointSet[0].length;
+    this.leftArm.setPosition(pointSet[0][currentPointsNumber]);
+    this.rightArm.setPosition(pointSet[1][currentPointsNumber]);
+    this.leftArmBack.setPosition(pointSet[2][currentPointsNumber]);
+    this.rightArmBack.setPosition(pointSet[3][currentPointsNumber]);
+    return () => {
+      const statuses = [
+        this.leftArm.next(),
+        this.rightArm.next(),
+        this.leftArmBack.next(),
+        this.rightArmBack.next(),
+      ];
+      // If status === true set next point for leg
+      const isReady = statuses.every((s) => s);
+      if (isReady) {
+        currentPointsNumber += 1;
+        if (currentPointsNumber === maxPositionsNumber) {
+          currentPointsNumber = 0;
+          readyCallback();
+          return;
+        }
+        this.leftArm.setPosition(pointSet[0][currentPointsNumber]);
+        this.rightArm.setPosition(pointSet[1][currentPointsNumber]);
+        this.leftArmBack.setPosition(pointSet[2][currentPointsNumber]);
+        this.rightArmBack.setPosition(pointSet[3][currentPointsNumber]);
+      }
+    };
+  },
   send(msg) {
     const { id } = msg;
     console.log(msg);
@@ -151,34 +180,72 @@ const controllerArm = {
         return;
       case "go_step_down":
         return;
-      case "position_up":
+      case "position_begin":
         {
           interval && clearInterval(interval);
           const points = getStandUpPointsSet({
             count,
-            oneStep,
+            oneStep: 2 * oneStep,
             y0,
             z0,
           });
           const cb = () => clearInterval(interval);
-          const funcUp = this.setPositionsForLeg(points, true, cb);
+          const funcUp = this.setPositionsForLegSync(points, cb);
 
           interval = setInterval(funcUp, speed);
         }
         return;
-      case "position_down":
+      case "position_start":
         {
           interval && clearInterval(interval);
           const points = getToDownPointsSet({
             count,
-            oneStep,
-            y0: 50,
+            oneStep: 2 * oneStep,
+            y0: 20,
             z0,
           });
           const cb = () => clearInterval(interval);
-          const funcDown = this.setPositionsForLeg(points, true);
+          const funcDown = this.setPositionsForLegSync(points, cb);
 
-          interval = setInterval(funcDown, speed, cb);
+          interval = setInterval(funcDown, speed);
+        }
+        return;
+      case "turn_right":
+        {
+          interval && clearInterval(interval);
+          const points = getTurnPointsSet({
+            count,
+            countUp,
+            oneStep,
+            y0,
+            z0,
+            S,
+            xInit,
+            kY,
+            alpha: 10,
+          });
+          const func = this.setPositionsForLeg(points);
+
+          interval = setInterval(func, speed);
+        }
+        return;
+      case "turn_left":
+        {
+          interval && clearInterval(interval);
+          const points = getTurnPointsSet({
+            count,
+            countUp,
+            oneStep,
+            y0,
+            z0,
+            S,
+            xInit,
+            kY,
+            alpha: -10,
+          });
+          const func = this.setPositionsForLeg(points);
+
+          interval = setInterval(func, speed);
         }
         return;
     }
