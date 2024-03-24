@@ -19,11 +19,11 @@ const sendMessage = ({ id, width }) =>
 let step = 1; //1 mm per time
 let speed = 20;
 let S = 100; //mm
-let y0 = -80; //mm
+let y0 = -60; //mm
 let z0 = 60; //mm
 let kY = 30; //mm
-let count = 15;
-let countUp = 6;
+let count = 20;
+let countUp = 8;
 let interval = null;
 let alpha = 11;
 
@@ -91,17 +91,17 @@ const controllerArm = {
     });
   },
   setPositionsForLeg(pointSet) {
-    const currentPointsNumber = [0, 0, 0, 0];
+    const currentPointsNumber = [1, 1, 1, 1];
     const maxPositionsNumber = [
       pointSet[0].length,
       pointSet[1].length,
       pointSet[2].length,
       pointSet[3].length,
     ];
-    this.leftArm.setPosition(pointSet[0][currentPointsNumber[0]]);
-    this.rightArm.setPosition(pointSet[1][currentPointsNumber[1]]);
-    this.leftArmBack.setPosition(pointSet[2][currentPointsNumber[2]]);
-    this.rightArmBack.setPosition(pointSet[3][currentPointsNumber[3]]);
+    this.leftArm.setPosition(pointSet[0][0]);
+    this.rightArm.setPosition(pointSet[1][0]);
+    this.leftArmBack.setPosition(pointSet[2][0]);
+    this.rightArmBack.setPosition(pointSet[3][0]);
 
     return () => {
       const statuses = [
