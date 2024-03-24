@@ -1,3 +1,3 @@
 const { setZeroAnglesToLeg } = require('./common');
 
-setZeroAnglesToLeg(0, 1, 2, false, false);
+setZeroAnglesToLeg(12, 13, 14, false, false);

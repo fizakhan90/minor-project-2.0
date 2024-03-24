@@ -92,10 +92,10 @@ class Arm {
       : 180 - this.calcGamma(x, z);
     const _Betta = Betta + Delta;
     const newGamma = Gamma < 0 ? 180 + Gamma : Gamma;
-    const correctGamma = newGamma > 180 ? newGamma - 180 : newGamma;
+
     checkAngle(Alpha) && this.setA(this.invertX ? Alpha+this.a : 180 - Alpha-this.a);
     checkAngle(_Betta) && this.setB(this.invertX ? 180 - (90 + _Betta+this.b) : 90 + _Betta+this.b);
-    checkAngle(Gamma) && this.setC(correctGamma+this.c);
+    checkAngle(Gamma) && this.setC(Gamma+this.c);
   }
   /////
   setPosition({ x, y, z, count: t }) {

@@ -19,13 +19,13 @@ const sendMessage = ({ id, width }) =>
 let step = 1; //1 mm per time
 let speed = 20;
 let S = 100; //mm
-let y0 = -90; //mm
-let z0 = 70; //mm
+let y0 = -80; //mm
+let z0 = 60; //mm
 let kY = 30; //mm
-let count = 50;
-let countUp = 20;
+let count = 15;
+let countUp = 6;
 let interval = null;
-let alpha = 15;
+let alpha = 11;
 
 const oneStep = S / 3;
 const xInit = 5;
@@ -181,7 +181,7 @@ const controllerArm = {
         return;
       case "go_step_down":
         return;
-      case "position_begin":
+      case "position_up":
         {
           interval && clearInterval(interval);
           const points = getStandUpPointsSet({
@@ -196,7 +196,7 @@ const controllerArm = {
           interval = setInterval(funcUp, speed);
         }
         return;
-      case "position_start":
+      case "position_down":
         {
           interval && clearInterval(interval);
           const points = getToDownPointsSet({
