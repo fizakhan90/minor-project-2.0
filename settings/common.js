@@ -13,9 +13,9 @@ const options = {
 
 const setZeroAnglesToLeg = (a, b, c, isFront, isLeft) => {
   const pwm = new PcaDriver(options, (err) => {
-    const alpha = 0;
-    const betta = 0;
-    const gamma = 0;
+    const alpha = isFront && isLeft ? 0 : 180;
+    const betta = isFront && isLeft ? 0 : 180;
+    const gamma = isFront && isLeft ? 0 : 180;
     pwm.setPulseLength(a, Math.round((alpha * (MAX - MIN)) / 180 + MIN));
     pwm.setPulseLength(b, Math.round((betta * (MAX - MIN)) / 180 + MIN));
     pwm.setPulseLength(c, Math.round((gamma * (MAX - MIN)) / 180 + MIN));

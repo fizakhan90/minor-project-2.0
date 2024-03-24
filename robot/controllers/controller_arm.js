@@ -25,6 +25,7 @@ let kY = 30; //mm
 let count = 50;
 let countUp = 20;
 let interval = null;
+let alpha = 15;
 
 const oneStep = S / 3;
 const xInit = 5;
@@ -222,7 +223,7 @@ const controllerArm = {
             S,
             xInit,
             kY,
-            alpha: 10,
+            alpha,
           });
           const func = this.setPositionsForLeg(points);
 
@@ -241,9 +242,10 @@ const controllerArm = {
             S,
             xInit,
             kY,
-            alpha: -10,
+            alpha,
           });
-          const func = this.setPositionsForLeg(points);
+          const newPoints = [points[1], points[0], points[3], points[2]];
+          const func = this.setPositionsForLeg(newPoints);
 
           interval = setInterval(func, speed);
         }
