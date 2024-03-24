@@ -98,6 +98,10 @@ const controllerArm = {
       pointSet[2].length,
       pointSet[3].length,
     ];
+    this.leftArm.setPosition(pointSet[0][currentPointsNumber[0]]);
+    this.rightArm.setPosition(pointSet[1][currentPointsNumber[1]]);
+    this.leftArmBack.setPosition(pointSet[2][currentPointsNumber[2]]);
+    this.rightArmBack.setPosition(pointSet[3][currentPointsNumber[3]]);
 
     return () => {
       const statuses = [
