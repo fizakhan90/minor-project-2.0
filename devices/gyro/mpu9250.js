@@ -232,7 +232,9 @@ class LOCAL_I2C {
     return buff;
   }
   writeBytes(cmd, buffer) {
-    return this.i2c.writeI2cBlockSync(this.address, cmd, buffer.length, buffer);
+	console.log(this.address, cmd, buffer);
+	const bf = Buffer.from(buffer);
+    return this.i2c.writeI2cBlockSync(this.address, cmd, buffer.length, bf);
   }
   readByte(adrs, callback) {
     callback = callback || function () {};
@@ -350,7 +352,7 @@ class Mpu9250 {
       MPU9250.GYRO_FS_1000,
       MPU9250.GYRO_FS_2000,
     ];
-    const gyro_value = MPU9250.GYRO_FS_250;
+    let gyro_value = MPU9250.GYRO_FS_250;
     if (this.config.GYRO_FS > -1 && this.config.GYRO_FS < 4)
       gyro_value = gyro_fs[this.config.GYRO_FS];
     this.setFullScaleGyroRange(gyro_value);
@@ -363,7 +365,7 @@ class Mpu9250 {
       MPU9250.ACCEL_FS_8,
       MPU9250.ACCEL_FS_16,
     ];
-    const accel_value = MPU9250.ACCEL_FS_4;
+    let accel_value = MPU9250.ACCEL_FS_4;
     if (this.config.ACCEL_FS > -1 && this.config.ACCEL_FS < 4)
       accel_value = accel_fs[this.config.ACCEL_FS];
     this.setFullScaleAccelRange(accel_value);
@@ -399,7 +401,9 @@ class Mpu9250 {
 
   testDevice() {
     const currentDeviceID = this.getIDDevice();
+	console.log('test device!', currentDeviceID);
     return (
+      currentDeviceID === 112 ||
       currentDeviceID === MPU9250.ID_MPU_9250 ||
       currentDeviceID === MPU9250.ID_MPU_9255
     );
@@ -476,9 +480,9 @@ class Mpu9250 {
       const zAccel = buffer.readInt16BE(4) * this.accelScalarInv;
 
       return [
-        scaleAccel(xAccel, aCal.offset.x, aCal.scale.x),
-        scaleAccel(yAccel, aCal.offset.y, aCal.scale.y),
-        scaleAccel(zAccel, aCal.offset.z, aCal.scale.z),
+        this.scaleAccel(xAccel, aCal.offset.x, aCal.scale.x),
+        this.scaleAccel(yAccel, aCal.offset.y, aCal.scale.y),
+        this.scaleAccel(zAccel, aCal.offset.z, aCal.scale.z),
         // Skip Temperature - bytes 6:7
         buffer.readInt16BE(8) * this.gyroScalarInv + gCal.x,
         buffer.readInt16BE(10) * this.gyroScalarInv + gCal.y,
@@ -528,9 +532,9 @@ class Mpu9250 {
       const zAccel = buffer.readInt16BE(4) * this.accelScalarInv;
 
       return [
-        scaleAccel(xAccel, aCal.offset.x, aCal.scale.x),
-        scaleAccel(yAccel, aCal.offset.y, aCal.scale.y),
-        scaleAccel(zAccel, aCal.offset.z, aCal.scale.z),
+        this.scaleAccel(xAccel, aCal.offset.x, aCal.scale.x),
+        this.scaleAccel(yAccel, aCal.offset.y, aCal.scale.y),
+        this.scaleAccel(zAccel, aCal.offset.z, aCal.scale.z),
       ];
     }
     return false;
