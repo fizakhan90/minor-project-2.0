@@ -232,8 +232,8 @@ class LOCAL_I2C {
     return buff;
   }
   writeBytes(cmd, buffer) {
-	console.log(this.address, cmd, buffer);
-	const bf = Buffer.from(buffer);
+    console.log(this.address, cmd, buffer);
+    const bf = Buffer.from(buffer);
     return this.i2c.writeI2cBlockSync(this.address, cmd, buffer.length, bf);
   }
   readByte(adrs, callback) {
@@ -266,7 +266,7 @@ class DebugConsole {
   constructor(debug) {
     this.enabled = debug || false;
   }
-  log = function (type, str) {
+  log(type, str) {
     if (this.enabled) {
       const date = new Date();
       const strdate =
@@ -276,7 +276,7 @@ class DebugConsole {
         "[" + type.toUpperCase() + "][" + strhour + " " + strdate + "]:" + str
       );
     }
-  };
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -285,14 +285,10 @@ class DebugConsole {
 // /** ---------------------------------------------------------------------- **/ //
 ////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @name Mpu9250
- * @params Object {device: '', address: '', UpMagneto: false, DEBUG: false, ak_address: ''}
- */
 class Mpu9250 {
   constructor(cfg) {
     const _default = {
-      device: 0,//"/dev/i2c-0"
+      device: 1, //"/dev/i2c-1"
       address: MPU9250.I2C_ADDRESS_AD0_LOW,
       UpMagneto: false,
       DEBUG: false,
@@ -401,7 +397,7 @@ class Mpu9250 {
 
   testDevice() {
     const currentDeviceID = this.getIDDevice();
-	console.log('test device!', currentDeviceID);
+    console.log("test device!", currentDeviceID);
     return (
       currentDeviceID === 112 ||
       currentDeviceID === MPU9250.ID_MPU_9250 ||
@@ -418,7 +414,7 @@ class Mpu9250 {
       sleep.usleep(100000);
 
       if (this.getByPASSEnabled()) {
-        this.ak8963 = new ak8963(this.config);
+        this.ak8963 = new Ak8963(this.config);
         return true;
       } else {
         this.debug.log("ERROR", "Can't turn on RA_INT_PIN_CFG.");
@@ -461,10 +457,6 @@ class Mpu9250 {
     return 0;
   }
 
-  /**
-   * @name getMotion6
-   * @return array | false
-   */
   getMotion6() {
     if (this.i2c) {
       const buffer = this.i2c.readBytes(
@@ -633,9 +625,9 @@ class Mpu9250 {
     return false;
   }
 
-  getPitch = function (value) {
+  getPitch(value) {
     return (Math.atan2(value[0], value[2]) + Math.PI) * (180 / Math.PI) - 180;
-  };
+  }
 
   getRoll(value) {
     return (Math.atan2(value[1], value[2]) + Math.PI) * (180 / Math.PI) - 180;
@@ -755,7 +747,7 @@ class Mpu9250 {
     return false;
   }
 
-  setSampleRate = function (sample_rate) {
+  setSampleRate(sample_rate) {
     if (this.i2c) {
       if (sample_rate < MPU9250.SAMPLERATE_MAX && rate >= 8000) {
         sample_rate = 8000;
@@ -774,9 +766,9 @@ class Mpu9250 {
       });
     }
     return false;
-  };
+  }
 
-  printSettings = function () {
+  printSettings() {
     const CLK_RNG = [
       "0 (Internal 20MHz oscillator)",
       "1 (Auto selects the best available clock source)",
@@ -825,7 +817,7 @@ class Mpu9250 {
       "  --> Gyro enabled (x, y, z): " +
         vectorToYesNo(this.getGyroPowerSettings())
     );
-  };
+  }
 
   vectorToYesNo(v) {
     const str = "(";
@@ -836,7 +828,7 @@ class Mpu9250 {
     return str;
   }
 
-  printAccelSettings = function () {
+  printAccelSettings() {
     const FS_RANGE = ["±2g (0)", "±4g (1)", "±8g (2)", "±16g (3)"];
     this.debug.log("INFO", "Accelerometer:");
     this.debug.log(
@@ -871,9 +863,9 @@ class Mpu9250 {
       "INFO",
       "    --> z: " + this.config.accelCalibration.scale.z
     );
-  };
+  }
 
-  printGyroSettings = function () {
+  printGyroSettings() {
     const FS_RANGE = [
       "+250dps (0)",
       "+500 dps (1)",
@@ -890,7 +882,7 @@ class Mpu9250 {
     this.debug.log("INFO", "  --> x: " + this.config.gyroBiasOffset.x);
     this.debug.log("INFO", "  --> y: " + this.config.gyroBiasOffset.y);
     this.debug.log("INFO", "  --> z: " + this.config.gyroBiasOffset.z);
-  };
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -899,198 +891,178 @@ class Mpu9250 {
 // /** ---------------------------------------------------------------------- **/ //
 ////////////////////////////////////////////////////////////////////////////////////
 
-function ak8963(config, callback) {
-  callback = callback || function () {};
-  this.config = config;
-  this.debug = new debugConsole(config.DEBUG);
-  this.config.ak_address = this.config.ak_address || AK8963.ADDRESS;
-  this.config.magCalibration =
-    this.config.magCalibration || AK8963.DEFAULT_CALIBRATION;
+class Ak8963 {
+  constructor(config, callback) {
+    callback = callback || function () {};
+    this.config = config;
+    this.debug = new DebugConsole(config.DEBUG);
+    this.config.ak_address = this.config.ak_address || AK8963.ADDRESS;
+    this.config.magCalibration =
+      this.config.magCalibration || AK8963.DEFAULT_CALIBRATION;
 
-  // connection with magnetometer
-  this.i2c = new LOCAL_I2C(this.config.ak_address, {
-    device: this.config.device,
-  });
-  sleep.usleep(10000);
-  const buffer = this.getIDDevice();
-
-  if (buffer & AK8963.WHO_AM_I_RESPONSE) {
-    this.getSensitivityAdjustmentValues();
+    // connection with magnetometer
+    this.i2c = new LOCAL_I2C(this.config.ak_address, {
+      device: this.config.device,
+    });
     sleep.usleep(10000);
-    this.setCNTL(AK8963.CNTL_MODE_CONTINUE_MEASURE_2);
-  } else {
+    const buffer = this.getIDDevice();
+
+    if (buffer & AK8963.WHO_AM_I_RESPONSE) {
+      this.getSensitivityAdjustmentValues();
+      sleep.usleep(10000);
+      this.setCNTL(AK8963.CNTL_MODE_CONTINUE_MEASURE_2);
+    } else {
+      this.debug.log(
+        "ERROR",
+        "AK8963: Device ID is not equal to 0x" +
+          AK8963.WHO_AM_I_RESPONSE.toString(16) +
+          ", device value is 0x" +
+          buffer.toString(16)
+      );
+    }
+    callback(true);
+  }
+
+  printSettings() {
+    const MODE_LST = {
+      0: "0x00 (Power-down mode)",
+      1: "0x01 (Single measurement mode)",
+      2: "0x02 (Continuous measurement mode 1: 8Hz)",
+      6: "0x06 (Continuous measurement mode 2: 100Hz)",
+      4: "0x04 (External trigger measurement mode)",
+      8: "0x08 (Self-test mode)",
+      15: "0x0F (Fuse ROM access mode)",
+    };
+
+    this.debug.log("INFO", "Magnetometer (Compass):");
     this.debug.log(
-      "ERROR",
-      "AK8963: Device ID is not equal to 0x" +
-        AK8963.WHO_AM_I_RESPONSE.toString(16) +
-        ", device value is 0x" +
-        buffer.toString(16)
+      "INFO",
+      "--> i2c address: 0x" + this.config.ak_address.toString(16)
     );
+    this.debug.log(
+      "INFO",
+      "--> Device ID: 0x" + this.getIDDevice().toString(16)
+    );
+    this.debug.log("INFO", "--> Mode: " + MODE_LST[this.getCNTL() & 0x0f]);
+    this.debug.log("INFO", "--> Scalars:");
+    this.debug.log("INFO", "  --> x: " + this.asax);
+    this.debug.log("INFO", "  --> y: " + this.asay);
+    this.debug.log("INFO", "  --> z: " + this.asaz);
   }
-  callback(true);
+
+  getDataReady() {
+    if (this.i2c) {
+      return this.i2c.readBit(AK8963.ST1, AK8963.ST1_DRDY_BIT);
+    }
+    return false;
+  }
+
+  getIDDevice() {
+    if (this.i2c) {
+      return this.i2c.readByte(AK8963.WHO_AM_I);
+    }
+    return false;
+  }
+
+  /**
+   * Get the Sensitivity Adjustment values.  These were set during manufacture and allow us to get the actual H values
+   * from the magnetometer.
+   * @name getSensitivityAdjustmentValues
+   */
+  getSensitivityAdjustmentValues() {
+    if (!this.config.scaleValues) {
+      this.asax = 1;
+      this.asay = 1;
+      this.asaz = 1;
+      return;
+    }
+
+    // Need to set to Fuse mode to get valid values from this.
+    const currentMode = this.getCNTL();
+    this.setCNTL(AK8963.CNTL_MODE_FUSE_ROM_ACCESS);
+    sleep.usleep(10000);
+
+    // Get the ASA* values
+    this.asax = ((this.i2c.readByte(AK8963.ASAX) - 128) * 0.5) / 128 + 1;
+    this.asay = ((this.i2c.readByte(AK8963.ASAY) - 128) * 0.5) / 128 + 1;
+    this.asaz = ((this.i2c.readByte(AK8963.ASAZ) - 128) * 0.5) / 128 + 1;
+
+    // Return the mode we were in before
+    this.setCNTL(currentMode);
+  }
+
+  getMagAttitude() {
+    // Get the actual data
+    const buffer = this.i2c.readBytes(AK8963.XOUT_L, 6, function (e, r) {});
+    const cal = this.config.magCalibration;
+
+    // For some reason when we read ST2 (Status 2) just after reading byte, this ensures the
+    // next reading is fresh.  If we do it before without a pause, only 1 in 15 readings will
+    // be fresh.  The setTimeout ensures this read goes to the back of the queue, once all other
+    // computation is done.
+    const self = this;
+    setTimeout(function () {
+      self.i2c.readByte(AK8963.ST2);
+    }, 0);
+
+    return [
+      (buffer.readInt16LE(0) * this.asax - cal.offset.x) * cal.scale.x,
+      (buffer.readInt16LE(2) * this.asay - cal.offset.y) * cal.scale.y,
+      (buffer.readInt16LE(4) * this.asaz - cal.offset.z) * cal.scale.z,
+    ];
+  }
+
+  getCNTL() {
+    if (this.i2c) {
+      return this.i2c.readByte(AK8963.CNTL);
+    }
+    return false;
+  }
+
+  /**
+   * @name setCNTL
+   * CNTL_MODE_OFF: 0x00, // Power-down mode
+   * CNTL_MODE_SINGLE_MEASURE: 0x01, // Single measurement mode
+   * CNTL_MODE_CONTINUE_MEASURE_1: 0x02, // Continuous measurement mode 1
+   * CNTL_MODE_CONTINUE_MEASURE_2: 0x06, // Continuous measurement mode 2
+   * CNTL_MODE_EXT_TRIG_MEASURE: 0x04, // External trigger measurement mode
+   * CNTL_MODE_SELF_TEST_MODE: 0x08, // Self-test mode
+   * CNTL_MODE_FUSE_ROM_ACCESS: 0x0F  // Fuse ROM access mode
+   * @return undefined | false
+   */
+  setCNTL(mode) {
+    if (this.i2c) {
+      return this.i2c.writeBytes(AK8963.CNTL, [mode], function () {});
+    }
+    return false;
+  }
 }
-
-ak8963.prototype.printSettings = function () {
-  const MODE_LST = {
-    0: "0x00 (Power-down mode)",
-    1: "0x01 (Single measurement mode)",
-    2: "0x02 (Continuous measurement mode 1: 8Hz)",
-    6: "0x06 (Continuous measurement mode 2: 100Hz)",
-    4: "0x04 (External trigger measurement mode)",
-    8: "0x08 (Self-test mode)",
-    15: "0x0F (Fuse ROM access mode)",
-  };
-
-  this.debug.log("INFO", "Magnetometer (Compass):");
-  this.debug.log(
-    "INFO",
-    "--> i2c address: 0x" + this.config.ak_address.toString(16)
-  );
-  this.debug.log("INFO", "--> Device ID: 0x" + this.getIDDevice().toString(16));
-  this.debug.log("INFO", "--> Mode: " + MODE_LST[this.getCNTL() & 0x0f]);
-  this.debug.log("INFO", "--> Scalars:");
-  this.debug.log("INFO", "  --> x: " + this.asax);
-  this.debug.log("INFO", "  --> y: " + this.asay);
-  this.debug.log("INFO", "  --> z: " + this.asaz);
-};
-
-/**------------------|[ FUNCTION ]|------------------**/
-
-/**---------------------|[ GET ]|--------------------**/
-
-/**
- * @name getDataReady
- * @return number | false
- */
-ak8963.prototype.getDataReady = function () {
-  if (this.i2c) {
-    return this.i2c.readBit(AK8963.ST1, AK8963.ST1_DRDY_BIT);
-  }
-  return false;
-};
-
-/**
- * @name getIDDevice
- * @return number | false
- */
-ak8963.prototype.getIDDevice = function () {
-  if (this.i2c) {
-    return this.i2c.readByte(AK8963.WHO_AM_I);
-  }
-  return false;
-};
-
-/**
- * Get the Sensitivity Adjustment values.  These were set during manufacture and allow us to get the actual H values
- * from the magnetometer.
- * @name getSensitivityAdjustmentValues
- */
-ak8963.prototype.getSensitivityAdjustmentValues = function () {
-  if (!this.config.scaleValues) {
-    this.asax = 1;
-    this.asay = 1;
-    this.asaz = 1;
-    return;
-  }
-
-  // Need to set to Fuse mode to get valid values from this.
-  const currentMode = this.getCNTL();
-  this.setCNTL(AK8963.CNTL_MODE_FUSE_ROM_ACCESS);
-  sleep.usleep(10000);
-
-  // Get the ASA* values
-  this.asax = ((this.i2c.readByte(AK8963.ASAX) - 128) * 0.5) / 128 + 1;
-  this.asay = ((this.i2c.readByte(AK8963.ASAY) - 128) * 0.5) / 128 + 1;
-  this.asaz = ((this.i2c.readByte(AK8963.ASAZ) - 128) * 0.5) / 128 + 1;
-
-  // Return the mode we were in before
-  this.setCNTL(currentMode);
-};
-
-/**
- * Get the raw magnetometer values
- * @name getMagAttitude
- * @return array
- */
-ak8963.prototype.getMagAttitude = function () {
-  // Get the actual data
-  const buffer = this.i2c.readBytes(AK8963.XOUT_L, 6, function (e, r) {});
-  const cal = this.config.magCalibration;
-
-  // For some reason when we read ST2 (Status 2) just after reading byte, this ensures the
-  // next reading is fresh.  If we do it before without a pause, only 1 in 15 readings will
-  // be fresh.  The setTimeout ensures this read goes to the back of the queue, once all other
-  // computation is done.
-  const self = this;
-  setTimeout(function () {
-    self.i2c.readByte(AK8963.ST2);
-  }, 0);
-
-  return [
-    (buffer.readInt16LE(0) * this.asax - cal.offset.x) * cal.scale.x,
-    (buffer.readInt16LE(2) * this.asay - cal.offset.y) * cal.scale.y,
-    (buffer.readInt16LE(4) * this.asaz - cal.offset.z) * cal.scale.z,
-  ];
-};
-
-/**
- * @name getCNTL
- * @return byte | false
- */
-ak8963.prototype.getCNTL = function () {
-  if (this.i2c) {
-    return this.i2c.readByte(AK8963.CNTL);
-  }
-  return false;
-};
-
-/**---------------------|[ SET ]|--------------------**/
-
-/**
- * @name setCNTL
- * CNTL_MODE_OFF: 0x00, // Power-down mode
- * CNTL_MODE_SINGLE_MEASURE: 0x01, // Single measurement mode
- * CNTL_MODE_CONTINUE_MEASURE_1: 0x02, // Continuous measurement mode 1
- * CNTL_MODE_CONTINUE_MEASURE_2: 0x06, // Continuous measurement mode 2
- * CNTL_MODE_EXT_TRIG_MEASURE: 0x04, // External trigger measurement mode
- * CNTL_MODE_SELF_TEST_MODE: 0x08, // Self-test mode
- * CNTL_MODE_FUSE_ROM_ACCESS: 0x0F  // Fuse ROM access mode
- * @return undefined | false
- */
-ak8963.prototype.setCNTL = function (mode) {
-  if (this.i2c) {
-    return this.i2c.writeBytes(AK8963.CNTL, [mode], function () {});
-  }
-  return false;
-};
-
-ak8963.prototype.constructor = ak8963;
-
 ////////////////////////////////////////////////////////////////////////////////////
 // /** ---------------------------------------------------------------------- **/ //
 //  *		 				Kalman filter									   *  //
 // /** ---------------------------------------------------------------------- **/ //
 ////////////////////////////////////////////////////////////////////////////////////
 
-Kalman_filter = function () {
-  this.Q_angle = 0.001;
-  this.Q_bias = 0.003;
-  this.R_measure = 0.03;
+class Kalman_filter {
+  constructor() {
+    this.Q_angle = 0.001;
+    this.Q_bias = 0.003;
+    this.R_measure = 0.03;
 
-  this.angle = 0;
-  this.bias = 0;
-  this.rate = 0;
+    this.angle = 0;
+    this.bias = 0;
+    this.rate = 0;
 
-  this.P = [
-    [0, 0],
-    [0, 0],
-  ];
+    this.P = [
+      [0, 0],
+      [0, 0],
+    ];
 
-  this.S = 0;
-  this.K = [];
-  this.Y = 0;
-
-  this.getAngle = function (newAngle, newRate, dt) {
+    this.S = 0;
+    this.K = [];
+    this.Y = 0;
+  }
+  getAngle(newAngle, newRate, dt) {
     this.rate = newRate - this.bias;
     this.angle += dt * this.rate;
 
@@ -1116,47 +1088,36 @@ Kalman_filter = function () {
     this.P[1][1] -= this.K[1] * this.P[0][1];
 
     return this.angle;
-  };
+  }
 
-  this.getRate = function () {
+  getRate() {
     return this.rate;
-  };
-  this.getQangle = function () {
+  }
+  getQangle() {
     return this.Q_angle;
-  };
-  this.getQbias = function () {
+  }
+  getQbias() {
     return this.Q_bias;
-  };
-  this.getRmeasure = function () {
+  }
+  getRmeasure() {
     return this.R_measure;
-  };
+  }
 
-  this.setAngle = function (value) {
+  setAngle(value) {
     this.angle = value;
-  };
-  this.setQangle = function (value) {
-    this.Q_angle = value;
-  };
-  this.setQbias = function (value) {
+  }
+  setQangle(value) {
+    Q_angle = value;
+  }
+  setQbias(value) {
     this.Q_bias = value;
-  };
-  this.setRmeasure = function (value) {
+  }
+  setRmeasure(value) {
     this.R_measure = value;
-  };
-};
+  }
+}
 
-/*******************/
-/** PUBLIC STATIC **/
-/*******************/
-
-/** Access to static parameters for MPU9250 */
 Mpu9250.MPU9250 = MPU9250;
-
-/** Access to static parameter for AK8963 */
 Mpu9250.AK8963 = AK8963;
-
-/*******************************/
-/** export the module to node **/
-/*******************************/
 
 module.exports = Mpu9250;
