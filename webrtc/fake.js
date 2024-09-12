@@ -1,8 +1,9 @@
 const puppeteer = require('puppeteer');
 
-(async() => {
+(async () => {
   const browser = await puppeteer.launch({
-    args: [ '--use-fake-ui-for-media-stream' ]
+    executablePath: '/usr/bin/chromium-browser',
+    args: ['--headless', '--no-sandbox', '--use-fake-ui-for-media-stream']
   });
   const page = await browser.newPage();
   await page.goto('http://localhost:3001/service');

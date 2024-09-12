@@ -22,8 +22,8 @@ let S = 100; //mm
 let y0 = -60; //mm
 let z0 = 60; //mm
 let kY = 30; //mm
-let count = 20;
-let countUp = 8;
+let count = 10;
+let countUp = 4;
 let interval = null;
 let alpha = 11;
 

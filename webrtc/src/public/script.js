@@ -13,11 +13,11 @@ const peer = new RTCPeerConnection(config);
 
 async function showDevices() {
     let devices = (await navigator.mediaDevices.enumerateDevices()).filter(i => i.kind == 'videoinput')
-    console.log('showDevices', devices[0].kind)
+    console.log('showDevices', devices[0]?.kind)
 }
 socket.on('connect', () => {
     console.log('Connected');
-    //showDevices();
+    showDevices();
     socket.emit('init_service');
 
     socket.on('signal_to_service', async (message) => {
