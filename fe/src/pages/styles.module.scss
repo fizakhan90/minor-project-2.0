@@ -1,69 +1,215 @@
+/* Base container styles */
 .Container {
   width: 100%;
-  height: 100%;
-  padding: 10px;
-
+  min-height: 100vh;
+  padding: 24px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  background-color: #f1f5f9;
+  font-family: 'Arial', sans-serif;
 }
 
+/* Control container base styles */
 .ControlContainer {
   position: relative;
   width: 100%;
-  height: 50%;
-
-  max-width: 300px;
-  max-height: 300px;
-
-  background-color: #6d757c3b;
-  border-radius: 5px;
-
-  text-transform: uppercase;
+  max-width: 320px;
+  aspect-ratio: 1/1;
+  border-radius: 16px;
+    background: linear-gradient(to bottom right, #0891b2, #06b6d4); /* Cyan gradient */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.ButtonForward {
+/* Grid overlay for visual effect */
+.ControlContainer::before {
+  content: '';
   position: absolute;
-  top: 5%;
+  inset: 0;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border-radius: 16px;
+}
+
+/* Common button styles - these will be applied to the Button component */
+.ControlContainer button {
+  position: absolute;
+  padding: 12px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #312e81;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ControlContainer button:hover {
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.ControlContainer button:active {
+  transform: scale(0.95);
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* Button positioning - these classes are used in your TypeScript */
+.ButtonForward {
+  top: 15%;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .ButtonBackward {
-  position: absolute;
-  bottom: 5%;
+  bottom: 15%;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .ButtonLeft {
-  position: absolute;
-  top: 35%;
-  left: 10%;
+  top: 50%;
+  left: 15%;
+  transform: translateY(-50%);
 }
 
 .ButtonRight {
-  position: absolute;
-  top: 35%;
-  right: 10%;
-}
-
-.ButtonDown {
-  position: absolute;
-  top: 40%;
-  left: 10%;
+  top: 50%;
+  right: 15%;
+  transform: translateY(-50%);
 }
 
 .ButtonUp {
-  position: absolute;
-  top: 5%;
-  left: 10%;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ButtonDown {
+  bottom: 65%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .ButtonStop {
-  position: absolute;
-  color: rgb(115, 22, 22);
-  bottom: 5%;
-  right: 5%;
+  top: calc(15% + 200px); /* Position it below the Forward button with some spacing */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ef4444 !important;
+  color: white !important;
 }
+
+.ButtonStop:hover {
+  background-color: #dc2626 !important;
+}
+
+/* Icon styles - for the SVG icons passed to the Button component */
+.ControlContainer button svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+  margin-right: 8px;
+}
+
+/* Text styles for button labels */
+.ControlContainer button span {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Hide text on smaller screens but keep it accessible */
+@media (max-width: 768px) {
+  .ControlContainer button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  .ControlContainer button svg {
+    margin-right: 0;
+  }
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .ControlContainer {
+    max-width: 280px;
+  }
+  
+  .ControlContainer button {
+    padding: 10px;
+  }
+  
+  .ControlContainer button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .Container {
+    padding: 16px;
+  }
+  
+  .ControlContainer {
+    max-width: 240px;
+  }
+  
+  .ControlContainer button {
+    padding: 8px;
+  }
+  
+  .ControlContainer button svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Add a title to each control container */
+.ControlContainer:first-child::after {
+  content: 'Movement Controls';
+  position: absolute;
+  top: 16px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ControlContainer:last-child::after {
+  content: 'Position Controls';
+  position: absolute;
+  top: 16px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
